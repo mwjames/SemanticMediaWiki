@@ -66,15 +66,15 @@ class RebuildData extends \Maintenance {
 	 */
 	protected function addDefaultParams() {
 
-		$this->addOption( 'd', '<delay> Wait for this many milliseconds after processing an article, useful for limiting server load.', false, true );
-		$this->addOption( 's', '<startid> Start refreshing at given article ID, useful for partial refreshing.', false, true );
-		$this->addOption( 'e', '<endid> Stop refreshing at given article ID, useful for partial refreshing.', false, true );
-		$this->addOption( 'n', '<numids> Stop refreshing after processing a given number of IDs, useful for partial refreshing.', false, true );
+		$this->addOption( 'delay', 'Wait for this many milliseconds after processing an article, useful for limiting server load.', false, true, 'd' );
+		$this->addOption( 'startid', 'Start refreshing at given article ID, useful for partial refreshing.', false, true, 's' );
+		$this->addOption( 'endid', 'Stop refreshing at given article ID, useful for partial refreshing.', false, true, 'e' );
+		$this->addOption( 'numids', 'Stop refreshing after processing a given number of IDs, useful for partial refreshing.', false, true, 'n' );
 		$this->addOption( 'startidfile', '<startidfile> Read <startid> from a file instead of the arguments and write the next id to the file when finished. Useful for continual partial refreshing from cron.', false, true );
-		$this->addOption( 'b', '<backend> Execute the operation for the storage backend of the given name (default is to use the current backend).', false, true );
+		$this->addOption( 'backend', 'Execute the operation for the storage backend of the given name (default is to use the current backend).', false, true, 'b' );
 
 		$this->addOption( 'f', 'Fully delete all content instead of just refreshing relevant entries. This will also rebuild the whole storage structure. May leave the wiki temporarily incomplete.', false );
-		$this->addOption( 'v', 'Be verbose about the progress', false );
+		$this->addOption( 'verbose', 'Be verbose about the progress', false, false, 'v' );
 		$this->addOption( 'c', 'Will refresh only category pages (and other explicitly named namespaces)', false );
 		$this->addOption( 'p', 'Will refresh only property pages (and other explicitly named namespaces)', false );
 		$this->addOption( 't', 'Will refresh only type pages (and other explicitly named namespaces)', false );

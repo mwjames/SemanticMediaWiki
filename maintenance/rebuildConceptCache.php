@@ -97,10 +97,10 @@ class RebuildConceptCache extends \Maintenance {
 		$this->addOption( 'hard', 'Process only concepts that are not allowed to be computed online according to the current wiki settings.' );
 		$this->addOption( 'update', 'Process only concepts that already have some cache, i.e. do not create any new caches. For the opposite (only concepts without caches), use --old with a very high number.' );
 		$this->addOption( 'old', '<min> Process only concepts with caches older than <min> minutes or with no caches at all.', false, true );
-		$this->addOption( 's', '<startid> Process only concepts with page id of at least <startid>', false, true );
-		$this->addOption( 'e', '<endid> Process only concepts with page id of at most <endid>', false, true );
+		$this->addOption( 'startid', 'Process only concepts with page id of at least <startid>', false, true, 's' );
+		$this->addOption( 'endid', 'Process only concepts with page id of at most <endid>', false, true, 'e' );
 		$this->addOption( 'quiet', 'Do not give any output', false );
-		$this->addOption( 'verbose', 'Give additional output. No effect if --quiet is given.', false );
+		$this->addOption( 'verbose', 'Give additional output. No effect if --quiet is given.', false, false, 'v' );
 	}
 
 	/**
