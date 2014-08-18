@@ -12,6 +12,7 @@ use SMW\Query\Language\Description;
 use SMWSql3SmwIds;
 
 /**
+ * @license GNU GPL v2+
  * @since 2.1
  *
  * @author Markus Krötzsch

@@ -12,6 +12,7 @@ use SMW\Query\Language\Description;
 use SMW\DIProperty;
 
 /**
+ * @license GNU GPL v2+
  * @since 2.1
  *
  * @author Markus Krötzsch

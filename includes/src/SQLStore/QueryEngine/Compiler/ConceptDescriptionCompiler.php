@@ -15,6 +15,7 @@ use SMWQueryParser as QueryParser;
 use SMWSQLStore3;
 
 /**
+ * @license GNU GPL v2+
  * @since 2.1
  *
  * @author Markus Krötzsch
