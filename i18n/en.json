@@ -130,6 +130,8 @@
 	"smw_exportrdf_backlinks": "Also export all pages that refer to the exported pages.\nGenerates browsable RDF.",
 	"smw_exportrdf_lastdate": "Do not export pages that were not changed since the given point in time.",
 	"smw_exportrdf_submit": "Export",
+	"smw_unknown_importns": "No ontology namespace was provided to make the vocabulary available for import. See the help page on [https://semantic-mediawiki.org/wiki/Help:Providing_ontology_namespaces importing vocabularies] for information on how to do this.",
+	"smw_import_foaf": "http://xmlns.com/foaf/0.1/|[http://www.foaf-project.org/ Friend Of A Friend]\n name|Type:Text\n homepage|Type:URL\n mbox|Type:Email\n mbox_sha1sum|Type:Text\n depiction|Type:URL\n phone|Type:Text\n Person|Category\n Organization|Category\n knows|Type:Page\n member|Type:Page",
 	"uriresolver": "URIResolver",
 	"properties": "Properties",
 	"smw_properties_docu": "The following properties are used in the wiki.",
