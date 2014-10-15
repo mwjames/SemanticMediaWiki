@@ -41,6 +41,11 @@ abstract class Store {
 	 */
 	protected static $configuration = null;
 
+	/**
+	 * @var ConnectionManager
+	 */
+	private $connectionManager = null;
+
 ///// Reading methods /////
 
 	/**
@@ -427,6 +432,41 @@ abstract class Store {
 	 */
 	public function setConfiguration( Settings $configuration ) {
 		self::$configuration = $configuration;
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public function clear() {
+		$this->connectionManager->releaseConnection();
+	}
+
+	/**
+	 * @since 2.1
+	 *
+	 * @param ConnectionManager $connectionManager
+	 *
+	 * @return Store
+	 */
+	public function setConnectionManager( ConnectionManager $connectionManager ) {
+		$this->connectionManager = $connectionManager;
+		return $this;
+	}
+
+	/**
+	 * @since 2.1
+	 *
+	 * @param string|null $type
+	 *
+	 * @return mixed
+	 */
+	public function getConnection( $type = null ) {
+
+		if ( $this->connectionManager === null ) {
+			$this->connectionManager = new ConnectionManager();
+		}
+
+		return $this->connectionManager->getConnection( $type );
 	}
 
 }

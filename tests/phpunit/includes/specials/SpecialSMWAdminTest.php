@@ -88,7 +88,7 @@ class SpecialSMWAdminTest extends SpecialPageTestCase {
 			->getMock();
 
 		$store->expects( $this->once() )
-			->method( 'getDatabase' )
+			->method( 'getConnection' )
 			->will( $this->returnValue( $database ) );
 
 		$store->expects( $this->once() )

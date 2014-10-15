@@ -56,7 +56,7 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 	/**
 	 * @dataProvider storeClassProvider
 	 */
-	public function testRegisteredSMWStoreSelectQueryResultBeforeHookThatIncludesFetchingOfQueryResult( $storeClass ) {
+	public function testRegisteredSMWStoreBeforeQueryResultLookupHookThatIncludesFetchingOfQueryResult( $storeClass ) {
 
 		$query = $this->getMockBuilder( '\SMWQuery' )
 			->disableOriginalConstructor()
@@ -70,7 +70,7 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 		$store->expects( $this->once() )
 			->method( 'fetchQueryResult' );
 
-		$this->mwHooksHandler->register( 'SMW::Store::selectQueryResultBefore', function( $store, $query, &$queryResult ) {
+		$this->mwHooksHandler->register( 'SMW::Store::BeforeQueryResultLookup', function( $store, $query, &$queryResult ) {
 			$queryResult = 'Foo';
 			return true;
 		} );
@@ -84,7 +84,7 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 	/**
 	 * @dataProvider storeClassProvider
 	 */
-	public function testRegisteredSMWStoreSelectQueryResultBeforeHookToSuppressDefaultQueryResultFetch( $storeClass ) {
+	public function testRegisteredSMWStoreBeforeQueryResultLookupHookToSuppressDefaultQueryResultFetch( $storeClass ) {
 
 		$query = $this->getMockBuilder( '\SMWQuery' )
 			->disableOriginalConstructor()
@@ -98,7 +98,7 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 		$store->expects( $this->never() )
 			->method( 'fetchQueryResult' );
 
-		$this->mwHooksHandler->register( 'SMW::Store::selectQueryResultBefore', function( $store, $query, &$queryResult ) {
+		$this->mwHooksHandler->register( 'SMW::Store::BeforeQueryResultLookup', function( $store, $query, &$queryResult ) {
 
 			$queryResult = 'Foo';
 
@@ -115,7 +115,7 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 	/**
 	 * @dataProvider storeClassProvider
 	 */
-	public function testRegisteredSMWStoreSelectQueryResultAfterHook( $storeClass ) {
+	public function testRegisteredSMWStoreAfterQueryResultLookupHook( $storeClass ) {
 
 		$queryResult = $this->getMockBuilder( '\SMWQueryResult' )
 			->disableOriginalConstructor()
@@ -134,7 +134,7 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 			->method( 'fetchQueryResult' )
 			->will( $this->returnValue( $queryResult ) );
 
-		$this->mwHooksHandler->register( 'SMW::Store::selectQueryResultAfter', function( $store, &$queryResult ) {
+		$this->mwHooksHandler->register( 'SMW::Store::AfterQueryResultLookup', function( $store, &$queryResult ) {
 
 			if ( !$queryResult instanceOf \SMWQueryResult ) {
 				throw new RuntimeException( 'Expected a SMWQueryResult instance' );
@@ -144,6 +144,28 @@ class SemanticMediaWikiProvidedHookInterfaceIntegrationTest extends \PHPUnit_Fra
 		} );
 
 		$store->getQueryResult( $query );
+	}
+
+	public function testRegisteredSMWConnectionManagerRegisterConnectionProviderHook() {
+
+		$connectionProvider = $this->getMockBuilder( '\SMW\DBConnectionProvider' )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$connectionProvider->expects( $this->once() )
+			->method( 'getConnection' );
+
+		$this->mwHooksHandler->register( 'SMW::ConnectionManager::RegisterConnectionProvider', function( $connectionManager ) use ( $connectionProvider ) {
+			$connectionManager->registerConnection( 'foo', $connectionProvider );
+
+			return true;
+		} );
+
+		$connectionManager = new \SMW\ConnectionManager();
+
+		$connectionManager
+			->releaseConnection()
+			->getConnection( 'Foo' );
 	}
 
 	public function storeClassProvider() {

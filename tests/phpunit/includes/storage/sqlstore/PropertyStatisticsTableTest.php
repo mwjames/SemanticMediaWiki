@@ -38,7 +38,7 @@ class PropertyStatisticsTableTest extends MwDBaseUnitTestCase {
 	public function testDeleteAll() {
 
 		$statsTable = new PropertyStatisticsTable(
-			$this->getStore()->getDatabase(),
+			$this->getStore()->getConnection( 'sql' ),
 			\SMWSQLStore3::PROPERTY_STATISTICS_TABLE
 		);
 
@@ -74,7 +74,7 @@ class PropertyStatisticsTableTest extends MwDBaseUnitTestCase {
 		if ( $this->statsTable === null ) {
 
 			$this->statsTable = new PropertyStatisticsTable(
-				$this->getStore()->getDatabase(),
+				$this->getStore()->getConnection( 'sql' ),
 				\SMWSQLStore3::PROPERTY_STATISTICS_TABLE
 			);
 
@@ -114,7 +114,7 @@ class PropertyStatisticsTableTest extends MwDBaseUnitTestCase {
 	public function testAddToUsageCounts() {
 
 		$statsTable = new PropertyStatisticsTable(
-			$this->getStore()->getDatabase(),
+			$this->getStore()->getConnection( 'sql' ),
 			\SMWSQLStore3::PROPERTY_STATISTICS_TABLE
 		);
 

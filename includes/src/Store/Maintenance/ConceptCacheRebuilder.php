@@ -230,7 +230,7 @@ class ConceptCacheRebuilder {
 
 	protected function acquireMultipleConcepts() {
 
-		$titleLookup = new TitleLookup( $this->store->getDatabase() );
+		$titleLookup = new TitleLookup( $this->store->getConnection( 'sql' ) );
 		$titleLookup->byNamespace( SMW_NS_CONCEPT );
 
 		if ( $this->endId == 0 && $this->startId == 0 ) {

@@ -322,7 +322,7 @@ class DataRebuilder {
 
 		$pages = array();
 
-		$titleLookup = new TitleLookup( $this->store->getDatabase() );
+		$titleLookup = new TitleLookup( $this->store->getConnection( 'sql' ) );
 
 		foreach ( $this->filters as $namespace ) {
 			$pages = array_merge( $pages, $titleLookup->byNamespace( $namespace )->selectAll() );

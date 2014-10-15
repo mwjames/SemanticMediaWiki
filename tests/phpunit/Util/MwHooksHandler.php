@@ -27,8 +27,9 @@ class MwHooksHandler {
 		'SMWStore::updateDataBefore',
 		'smwInitProperties',
 		'SMW::SQLStore::updatePropertyTableDefinitions',
-		'SMW::Store::selectQueryResultBefore',
-		'SMW::Store::selectQueryResultAfter'
+		'SMW::Store::BeforeQueryResultLookup',
+		'SMW::Store::AfterQueryResultLookup',
+		'SMW::ConnectionManager::RegisterConnectionProvider'
 	);
 
 	/**

@@ -10,6 +10,7 @@ use SMW\SemanticData;
 use SMW\DIWikiPage;
 use SMW\Store;
 use SMW\DIProperty;
+use SMW\ConnectionManager;
 
 use SMWDataItem as DataItem;
 use SMWQuery as Query;
@@ -51,12 +52,6 @@ class SPARQLStore extends Store {
 	 * @var Store
 	 */
 	protected $baseStore;
-
-	/**
-	 * @since 1.9.2
-	 * @var GenericHttpDatabaseConnector
-	 */
-	protected $sparqlDatabase = null;
 
 	/**
 	 * @since 1.8
@@ -151,7 +146,7 @@ class SPARQLStore extends Store {
 			$redirid
 		);
 
-		$sparqlDatabase = $this->getSparqlDatabase();
+		$sparqlDatabase = $this->getConnection();
 		$sparqlDatabase->insertDelete( "?s ?p $newUri", "?s ?p $oldUri", "?s ?p $oldUri", $namespaces );
 
 		if ( $oldtitle->getNamespace() === SMW_NS_PROPERTY ) {
@@ -202,7 +197,7 @@ class SPARQLStore extends Store {
 
 		$turtleTriplesBuilder = new TurtleTriplesBuilder(
 			$semanticData,
-			new RedirectLookup( $this->getSparqlDatabase() )
+			new RedirectLookup( $this->getConnection() )
 		);
 
 		if ( !$turtleTriplesBuilder->hasTriplesForUpdate() ) {
@@ -211,7 +206,7 @@ class SPARQLStore extends Store {
 
 		$this->doSparqlDataDelete( $semanticData->getSubject() );
 
-		$this->getSparqlDatabase()->insertData(
+		$this->getConnection()->insertData(
 			$turtleTriplesBuilder->getTriples(),
 			$turtleTriplesBuilder->getPrefixes()
 		);
@@ -250,10 +245,10 @@ class SPARQLStore extends Store {
 		$masterPageProperty = Exporter::getSpecialNsResource( 'swivt', 'masterPage' );
 		$masterPagePropertyUri = TurtleSerializer::getTurtleNameForExpElement( $masterPageProperty );
 
-		$success = $this->getSparqlDatabase()->deleteContentByValue( $masterPagePropertyUri, $resourceUri, $extraNamespaces );
+		$success = $this->getConnection()->deleteContentByValue( $masterPagePropertyUri, $resourceUri, $extraNamespaces );
 
 		if ( $success ) {
-			return $this->getSparqlDatabase()->delete( "$resourceUri ?p ?o", "$resourceUri ?p ?o", $extraNamespaces );
+			return $this->getConnection()->delete( "$resourceUri ?p ?o", "$resourceUri ?p ?o", $extraNamespaces );
 		}
 
 		return false;
@@ -269,11 +264,11 @@ class SPARQLStore extends Store {
 
 		$result = null;
 
-		if ( wfRunHooks( 'SMW::Store::selectQueryResultBefore', array( $this, $query, &$result ) ) ) {
+		if ( wfRunHooks( 'SMW::Store::BeforeQueryResultLookup', array( $this, $query, &$result ) ) ) {
 			$result = $this->fetchQueryResult( $query );
 		}
 
-		wfRunHooks( 'SMW::Store::selectQueryResultAfter', array( $this, &$result ) );
+		wfRunHooks( 'SMW::Store::AfterQueryResultLookup', array( $this, &$result ) );
 
 		return $result;
 	}
@@ -281,7 +276,7 @@ class SPARQLStore extends Store {
 	protected function fetchQueryResult( Query $query ) {
 
 		$queryEngine = new QueryEngine(
-			$this->getSparqlDatabase(),
+			$this->getConnection(),
 			new QueryConditionBuilder(),
 			new QueryResultFactory( $this )
 		);
@@ -364,7 +359,7 @@ class SPARQLStore extends Store {
 	 */
 	public function drop( $verbose = true ) {
 		$this->baseStore->drop( $verbose );
-		$this->getSparqlDatabase()->deleteAll();
+		$this->getConnection()->deleteAll();
 	}
 
 	/**
@@ -376,16 +371,6 @@ class SPARQLStore extends Store {
 	}
 
 	/**
-	 * @since  1.9.2
-	 *
-	 * @param GenericHttpDatabaseConnector $sparqlDatabase
-	 */
-	public function setSparqlDatabase( GenericHttpDatabaseConnector $sparqlDatabase ) {
-		$this->sparqlDatabase = $sparqlDatabase;
-		return $this;
-	}
-
-	/**
 	 * @since 2.0
 	 */
 	public function getPropertyTables() {
@@ -393,33 +378,21 @@ class SPARQLStore extends Store {
 	}
 
 	/**
-	 * @since  1.9.2
-	 *
-	 * @return GenericHttpDatabaseConnector
-	 */
-	public function getSparqlDatabase() {
-
-		if ( $this->sparqlDatabase === null ) {
-			$this->sparqlDatabase = smwfGetSparqlDatabase();
-		}
-
-		return $this->sparqlDatabase;
-	}
-
-	/**
-	 * @since  2.0
-	 *
-	 * @return Database
-	 */
-	public function getDatabase() {
-		return $this->baseStore->getDatabase();
-	}
-
-	/**
 	 * @since 2.0
 	 */
 	public function clear() {
 		$this->baseStore->clear();
+	}
+
+	/**
+	 * @since 2.1
+	 *
+	 * @param string|null $type
+	 *
+	 * @return mixed
+	 */
+	public function getConnection( $type = 'sparql' ) {
+		return parent::getConnection( $type );
 	}
 
 }

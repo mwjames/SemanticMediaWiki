@@ -139,7 +139,7 @@ class PropertiesCollector extends CacheableResultCollector {
 		}
 
 		$statsTable = new PropertyStatisticsTable(
-			$this->store->getDatabase(),
+			$this->store->getConnection( 'sql' ),
 			$this->store->getStatisticsTable()
 		);
 
