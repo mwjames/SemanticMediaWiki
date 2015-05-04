@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+#set -ex
 BASE_PATH=$(pwd)
 E_UNREACHABLE=86
 
@@ -67,26 +67,54 @@ fi
 if [ "$FOURSTORE" != "" ]
 then
 
-	sudo mkdir /var/lib/4store/
-	sudo mkdir /var/lib/4store/db
-	sudo chown $USER -R /var/lib/4store/
-	sudo chmod g+rw -R /var/lib/4store/
+	sudo mkdir -p /var/lib/4store
+	sudo mkdir -p /var/log/4store
 
-	sudo apt-get install 4store=$FOURSTORE
+	sudo chown $USER:$USER /var/lib/4store/
+	sudo chown $USER:$USER /var/log/4store/
 
-	## Disabling the firewall
-	sudo iptables -F
+	sudo touch /etc/4store.conf
+	sudo chown $USER:$USER /etc/4store.conf
 
-	4s-backend-setup db
-	4s-backend db
+	sudo apt-get install -y software-properties-common
+	sudo add-apt-repository ppa:yves-raimond/ppa -y
+	sudo apt-get update -q
+	sudo apt-get install -y --force-yes 4store
+
+echo '[4s-boss]
+discovery = sole
+nodes = 127.0.0.1
+
+[smwrepo]
+port = 8088' > /etc/4store.conf
+
+	4s-boss
+	ps auxw | grep 4s-bos[s]
+
+	4s-admin create-store smwrepo
+	sleep 5
+
+	4s-admin start-stores smwrepo
+	sleep 5
+
+	4s-admin list-nodes
+	4s-admin list-stores
+	sleep 5
+
+	4s-admin list-nodes
+	4s-admin list-stores
 
 	## Output the current process table
-	ps auwwx | grep 4s-
+	##ps auwwx | grep 4s-
 
 	## -D only used to check the status of the 4store instance
-	## 4s-httpd -D -p 8088 db
+	4s-backend-setup smwrepo
+	sleep 5
+	4s-backend smwrepo
+	sleep 5
+	4s-httpd -p 8088 smwrepo
 
-	4s-httpd -p 8088 db
+	##4s-httpd -p 8088 db
 fi
 
 # Version 6.1 is available
