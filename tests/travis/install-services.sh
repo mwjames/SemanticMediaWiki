@@ -3,7 +3,7 @@ set -ex
 BASE_PATH=$(pwd)
 E_UNREACHABLE=86
 
-if [ "$FOURSTORE" != "" ] || [ "$VIRTUOSO" != "" ] || [ "$SESAME" != "" ]
+if [ "$FOURSTORE" != "" ] || [ "$VIRTUOSO" == "6.2" ] || [ "$SESAME" != "" ]
 then
 	sudo apt-get update -qq
 fi
@@ -101,7 +101,7 @@ then
 fi
 
 # Version 6.1 is available
-if [ "$VIRTUOSO" != "" ]
+if [ "$VIRTUOSO" == "6.1" ]
 then
 	sudo apt-get install -qq virtuoso-opensource
 	echo "RUN=yes" | sudo tee -a /etc/default/virtuoso-opensource-$VIRTUOSO
@@ -143,5 +143,34 @@ then
 		echo "blazegraph service url is not reachable"
 		exit $E_UNREACHABLE
 	fi
+fi
 
+if [ "$VIRTUOSO" == "7.2" ]
+then
+
+#	echo "deb http://packages.comsode.eu/debian wheezy main" | sudo tee -a /etc/apt/sources.list.d/odn.list
+#	wget -O - http://packages.comsode.eu/key/odn.gpg.key | sudo apt-key add -
+#	sudo apt-get update -qq
+#	sudo apt-get install virtuoso-server
+
+	# http://stack.linkeddata.org/getting-started/installing-components/
+
+	# download the repository package
+	wget http://stack.linkeddata.org/ldstable-repository.deb
+	# install the repository package
+	sudo dpkg -i ldstable-repository.deb
+	# update the repository database
+	sudo apt-get update -qq
+
+	#sudo apt-get install imagemagick
+	#sudo apt-get install libmagickwand-dev
+
+	# for instance to install virtuoso-opensource
+	#sudo apt-get --yes --force-yes install virtuoso-opensource-7 libvirtodbc0 libiodbc2
+	sudo apt-get --yes --force-yes --fix-missing install virtuoso-opensource-7
+
+	echo "RUN=yes" | sudo tee -a /etc/default/virtuoso-opensource-$VIRTUOSO
+	sudo service virtuoso-opensource-$VIRTUOSO start
+
+	isql-vt 1111 dba dba $BASE_PATH/tests/travis/virtuoso-sparql-permission.sql
 fi
